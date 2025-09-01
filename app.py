@@ -130,11 +130,11 @@ def make_app(*args, **kwargs):
     logging.debug(f"{name} make_app - collection.name: {collection.name!r}")
 
     # 'default_query_filter' is a query document that selects which document(s) to include in the result set
-    default_query_filter = json.loads(kwargs.get("default_query_filter", {}))
+    default_query_filter = json.loads(kwargs.get("default_query_filter", "{}"))
     logging.debug(f"{name} make_app - default_query_filter: {default_query_filter!r}")
 
     # Initialize the default query options
-    default_query_options = json.loads(kwargs.get("default_query_options", {}))
+    default_query_options = json.loads(kwargs.get("default_query_options", "{}"))
     logging.debug(f"{name} make_app - default_query_options: {default_query_options!r}")
 
     return tornado.web.Application(
