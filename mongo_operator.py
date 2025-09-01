@@ -4,19 +4,19 @@ from datetime import datetime, timezone
 from urllib.parse import unquote_plus
 
 
-def operator_value(field:str, value:str):
+def operator_value(field: str, value: str):
     """Expand operator string values"""
 
     # Catch and exit when not an unprocessed operator
-    if not isinstance(value, str) or not value.startswith('$'):
+    if not isinstance(value, str) or not value.startswith("$"):
         return field, value
 
     # Split the operator from the string value
-    operator, value = value.split(':', 1)
+    operator, value = value.split(":", 1)
 
     # Match the value expansion format
     match value:
-        case '$now':
+        case "$now":
             # Set the value to current UTC date/time
             value = datetime.now(tz=timezone.utc)
         case _:
@@ -25,70 +25,70 @@ def operator_value(field:str, value:str):
     # Match the operator expansion format
     match operator:
         # Non-standard operators
-        case '$between':
+        case "$between":
             # sugar for creating a `$gte+$lte' filter
-            gte, lte = v.split(',')
+            gte, lte = v.split(",")
             return field, {
-                '$gte': datetime.fromisoformat(gte),
-                '$lte': datetime.fromisoformat(lte)
+                "$gte": datetime.fromisoformat(gte),
+                "$lte": datetime.fromisoformat(lte),
             }
         ## Comparison operators
-        case '$lte':
+        case "$lte":
             # https://docs.mongodb.com/manual/reference/operator/query/lte/
-            return field, {'$lte': value}
-        case '$eq':
+            return field, {"$lte": value}
+        case "$eq":
             # https://docs.mongodb.com/manual/reference/operator/query/eq/
-            return field, {'$eq': value}
-        case '$gt':
+            return field, {"$eq": value}
+        case "$gt":
             # https://docs.mongodb.com/manual/reference/operator/query/gt/
-            return field, {'$gt': value}
-        case '$gte':
+            return field, {"$gt": value}
+        case "$gte":
             # https://docs.mongodb.com/manual/reference/operator/query/gte/
-            return field, {'$gte': value}
-        case '$in':
+            return field, {"$gte": value}
+        case "$in":
             # https://docs.mongodb.com/manual/reference/operator/query/in/
-            return field, {'$in': value.split(',')}
-        case '$lt':
+            return field, {"$in": value.split(",")}
+        case "$lt":
             # https://docs.mongodb.com/manual/reference/operator/query/lt/
-            return field, {'$lt': value}
-        case '$lte':
+            return field, {"$lt": value}
+        case "$lte":
             # https://docs.mongodb.com/manual/reference/operator/query/lte/
-            return field, {'$lte': value}
-        case '$ne':
+            return field, {"$lte": value}
+        case "$ne":
             # https://docs.mongodb.com/manual/reference/operator/query/ne/
-            return field, {'$ne': value}
-        case '$nin':
+            return field, {"$ne": value}
+        case "$nin":
             # https://docs.mongodb.com/manual/reference/operator/query/nin/
-            return field, {'$nin': value.split(',')}
+            return field, {"$nin": value.split(",")}
         ## Logical operators
-        case '$and' | '$only':
+        case "$and" | "$only":
             # https://docs.mongodb.com/manual/reference/operator/query/and/
-            return '$and', [{field: word} for word in value.split(',')]
-        case '$not':
+            return "$and", [{field: word} for word in value.split(",")]
+        case "$not":
             # https://docs.mongodb.com/manual/reference/operator/query/not/
-            o,e = value.split(':', 1)
-            return field, {'$not': {o: e}}
-        case '$nor':
+            o, e = value.split(":", 1)
+            return field, {"$not": {o: e}}
+        case "$nor":
             # https://docs.mongodb.com/manual/reference/operator/query/nor/
-            return '$nor', [{field: word} for word in value.split(',')]
-        case '$or' | '$any':
+            return "$nor", [{field: word} for word in value.split(",")]
+        case "$or" | "$any":
             # https://docs.mongodb.com/manual/reference/operator/query/or/
-            return '$or', [{field: word} for word in value.split(',')]
+            return "$or", [{field: word} for word in value.split(",")]
         ## Element operators
-        case '$exists':
+        case "$exists":
             # https://docs.mongodb.com/manual/reference/operator/query/exists/
-            return field, {'$exists': value}
+            return field, {"$exists": value}
         #'$type'
         # Evaluation operators
         #'$expr'
         #'$jsonSchema'
         #'$mod'
-        case '$regex':
+        case "$regex":
             # https://docs.mongodb.com/manual/reference/operator/query/regex/
-            return field, {'$regex': value, '$options': 'i'}
-        case '$text' | '$search':
+            return field, {"$regex": value, "$options": "i"}
+        case "$text" | "$search":
             # https://docs.mongodb.com/manual/reference/operator/query/text/
-            return '$text', {'$search': unquote_plus(value)}
+            return "$text", {"$search": unquote_plus(value)}
         #'$where'
         # Geospatial operators
         #'$geoIntersects'

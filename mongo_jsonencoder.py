@@ -21,17 +21,18 @@ class ExtendedJSONEncoder(json.JSONEncoder):
       json.dumps(result, indent=4, separators=(',', ': '),
         sort_keys=True, cls=ExtendedJSONEncoder)
     """
+
     def default(self, obj, *args, **kwargs):
         try:
             match obj:
                 ## Python native types
                 case bytes():
                     ## Decode `bytes' instances with a reasonable limit
-                    return obj.decode('utf-8', 'replace')[:120]
+                    return obj.decode("utf-8", "replace")[:120]
                 case datetime.datetime():
                     ## Return datetime instances in ISO format
                     ## https://docs.python.org/3/library/datetime.html#datetime.datetime.isoformat
-                    return obj.isoformat(timespec='seconds')
+                    return obj.isoformat(timespec="seconds")
                 case NotImplementedError() | ValueError():
                     ## Handle *Some* Python Exception Classes
                     ## https://docs.python.org/3/library/exceptions.html
@@ -42,23 +43,23 @@ class ExtendedJSONEncoder(json.JSONEncoder):
                     ## pymongo.results.DeleteResult
                     ## https://pymongo.readthedocs.io/en/stable/api/pymongo/results.html#pymongo.results.DeleteResult
                     return {
-                        'acknowledged': getattr(obj, 'acknowledged', '-'),
-                        'deleted_count': getattr(obj, 'deleted_count', '-'),
-                        'raw_result': getattr(obj, 'raw_result', '-'),
+                        "acknowledged": getattr(obj, "acknowledged", "-"),
+                        "deleted_count": getattr(obj, "deleted_count", "-"),
+                        "raw_result": getattr(obj, "raw_result", "-"),
                     }
                 case pymongo.results.InsertOneResult():
                     ## pymongo.results.InsertOneResult
                     ## https://pymongo.readthedocs.io/en/stable/api/pymongo/results.html#pymongo.results.InsertOneResult
                     return {
-                        'acknowledged': getattr(obj, 'acknowledged', '-'),
-                        'inserted_id': getattr(obj, 'inserted_id', '-'),
+                        "acknowledged": getattr(obj, "acknowledged", "-"),
+                        "inserted_id": getattr(obj, "inserted_id", "-"),
                     }
                 case bson.errors.InvalidId():
                     ## bson.errors.InvalidId
                     ## https://pymongo.readthedocs.io/en/stable/api/bson/errors.html
                     return {
-                        'code': getattr(obj, 'code', '-'),
-                        'details': getattr(obj, 'args', ['-'])[0],
+                        "code": getattr(obj, "code", "-"),
+                        "details": getattr(obj, "args", ["-"])[0],
                     }
                 case bson.objectid.ObjectId():
                     ## bson.objectid.ObjectId
@@ -68,8 +69,8 @@ class ExtendedJSONEncoder(json.JSONEncoder):
                     ## pymongo.errors.OperationFailure
                     ## https://pymongo.readthedocs.io/en/stable/api/pymongo/errors.html#pymongo.errors.OperationFailure
                     return {
-                        'code': getattr(obj, 'code', '-'),
-                        'details': getattr(obj, 'details', '-'),
+                        "code": getattr(obj, "code", "-"),
+                        "details": getattr(obj, "details", "-"),
                     }
                 case bson.timestamp.Timestamp():
                     ## bson.timestamp.Timestamp
@@ -79,28 +80,28 @@ class ExtendedJSONEncoder(json.JSONEncoder):
                     ## pymongo.results.UpdateResult
                     ## https://pymongo.readthedocs.io/en/stable/api/pymongo/results.html#pymongo.results.UpdateResult
                     return {
-                        'acknowledged': getattr(obj, 'acknowledged', '-'),
-                        'matched_count': getattr(obj, 'matched_count', '-'),
-                        'modified_count': getattr(obj, 'modified_count', '-'),
-                        'raw_result': getattr(obj, 'raw_result', '-'),
-                        'upserted_id': getattr(obj, 'upserted_id', '-'),
+                        "acknowledged": getattr(obj, "acknowledged", "-"),
+                        "matched_count": getattr(obj, "matched_count", "-"),
+                        "modified_count": getattr(obj, "modified_count", "-"),
+                        "raw_result": getattr(obj, "raw_result", "-"),
+                        "upserted_id": getattr(obj, "upserted_id", "-"),
                     }
                 ## TornadoWeb types
                 ## -------------------------------------------------------------
                 case tornado.httpclient.HTTPClientError():
                     ## https://www.tornadoweb.org/en/stable/httpclient.html#tornado.httpclient.HTTPClientError
                     return {
-                        'code': getattr(obj, 'code', '-'),
-                        'reason': getattr(obj, 'reason', '-'),
+                        "code": getattr(obj, "code", "-"),
+                        "reason": getattr(obj, "reason", "-"),
                     }
                 case tornado.httpclient.HTTPRequest():
                     ## https://www.tornadoweb.org/en/stable/httpclient.html#tornado.httpclient.HTTPRequest
                     ## https://www.tornadoweb.org/en/stable/httputil.html#tornado.httputil.HTTPHeaders
                     return {
-                        'headers': getattr(obj, 'headers', '-'),
-                        'method': getattr(obj, 'method', '-'),
-                        'url': getattr(obj, 'url', '-'),
-                        'validate_cert': getattr(obj, 'validate_cert', '-'),
+                        "headers": getattr(obj, "headers", "-"),
+                        "method": getattr(obj, "method", "-"),
+                        "url": getattr(obj, "url", "-"),
+                        "validate_cert": getattr(obj, "validate_cert", "-"),
                     }
                 case tornado.httpclient.HTTPResponse():
                     ## https://www.tornadoweb.org/en/stable/httpclient.html#tornado.httpclient.HTTPResponse
@@ -109,12 +110,12 @@ class ExtendedJSONEncoder(json.JSONEncoder):
                     for field_name, field_value in sorted(obj.headers.get_all()):
                         headers[field_name] = field_value
                     return {
-                        'code': getattr(obj, 'code', '-'),
-                        'effective_url': getattr(obj, 'effective_url', '-'),
-                        'error': getattr(obj, 'error', '-'),
-                        'headers': headers,
-                        'reason': getattr(obj, 'reason', '-'),
-                        'body_length': len(getattr(obj, 'body', '')),
+                        "code": getattr(obj, "code", "-"),
+                        "effective_url": getattr(obj, "effective_url", "-"),
+                        "error": getattr(obj, "error", "-"),
+                        "headers": headers,
+                        "reason": getattr(obj, "reason", "-"),
+                        "body_length": len(getattr(obj, "body", "")),
                     }
                 case tornado.httputil.HTTPHeaders():
                     ## https://www.tornadoweb.org/en/stable/httputil.html#tornado.httputil.HTTPHeaders
@@ -128,10 +129,10 @@ class ExtendedJSONEncoder(json.JSONEncoder):
                     for field_name, field_value in sorted(obj.headers.get_all()):
                         headers[field_name] = field_value
                     return {
-                        'method': getattr(obj, 'method', '-'),
-                        'version': getattr(obj, 'version', '-'),
-                        'headers': headers,
-                        'host': getattr(obj, 'host', '-'),
+                        "method": getattr(obj, "method", "-"),
+                        "version": getattr(obj, "version", "-"),
+                        "headers": headers,
+                        "host": getattr(obj, "host", "-"),
                     }
                 case tornado.web.StaticFileHandler():
                     ## https://www.tornadoweb.org/en/stable/web.html#tornado.web.StaticFileHandler
@@ -140,8 +141,8 @@ class ExtendedJSONEncoder(json.JSONEncoder):
                 case _:
                     return super().default(obj)
         except TypeError:
-            return str(type(obj)).replace("'", '')
+            return str(type(obj)).replace("'", "")
         except Exception as error:
-            print('ExtendedJSONEncoder - Failed to convert obj')
+            print("ExtendedJSONEncoder - Failed to convert obj")
             print(f"{type(obj)}: {error!r}")
-            return str(type(obj)).replace("'", '')
+            return str(type(obj)).replace("'", "")

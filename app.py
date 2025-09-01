@@ -67,7 +67,7 @@ class PingHandler(tornado.web.RequestHandler):
         logging.debug(f"{name} get - **kwargs: {kwargs!r}")
 
         # Always return 200 Pong!
-        self.write({'ping': 'pong'})
+        self.write({"ping": "pong"})
 
 
 class HealthCheckHandler(tornado.web.RequestHandler):
@@ -82,7 +82,7 @@ class HealthCheckHandler(tornado.web.RequestHandler):
         logging.debug(f"{name} get - *args: {args!r}")
         logging.debug(f"{name} get - **kwargs: {kwargs!r}")
 
-        raise NotImplementedError('HealthCheckHandler, ...work to do!')
+        raise NotImplementedError("HealthCheckHandler, ...work to do!")
 
 
 def make_app(*args, **kwargs):
@@ -98,36 +98,43 @@ def make_app(*args, **kwargs):
     ]
 
     # Read-write route handlers
-    if kwargs.get('--admin', False):
+    if kwargs.get("--admin", False):
         routes += [
-            #(r".*/insert_one", InsertOneHandler),
+            # (r".*/insert_one", InsertOneHandler),
         ]
 
     # MongoDB PyMongo AsyncMongoClient
     # https://pymongo.readthedocs.io/en/4.13.0/api/pymongo/asynchronous/index.html
     # https://pymongo.readthedocs.io/en/stable/api/pymongo/asynchronous/mongo_client.html
-    logging.info(f"Using pymongo.AsyncMongoClient: {kwargs.get('mongodb', 'mongodb://127.0.0.1:27017')}")
-    asyncmongoclient = AsyncMongoClient(kwargs.get('mongodb', 'mongodb://127.0.0.1:27017'),
-        username=kwargs.get('username'),
-        password=kwargs.get('password'),
-        connectTimeoutMS=int(kwargs.get('connectTimeoutMS', 5000)), # driver default is 20000 ms
-        serverSelectionTimeoutMS=int(kwargs.get('serverSelectionTimeoutMS', 5000)), # driver default is ???? ms
-        appname=kwargs.get('appname', 'PyTornadoMongoClient'),
-        )
+    logging.info(
+        f"Using pymongo.AsyncMongoClient: {kwargs.get('mongodb', 'mongodb://127.0.0.1:27017')}"
+    )
+    asyncmongoclient = AsyncMongoClient(
+        kwargs.get("mongodb", "mongodb://127.0.0.1:27017"),
+        username=kwargs.get("username"),
+        password=kwargs.get("password"),
+        connectTimeoutMS=int(
+            kwargs.get("connectTimeoutMS", 5000)
+        ),  # driver default is 20000 ms
+        serverSelectionTimeoutMS=int(
+            kwargs.get("serverSelectionTimeoutMS", 5000)
+        ),  # driver default is ???? ms
+        appname=kwargs.get("appname", "PyTornadoMongoClient"),
+    )
     # Database connection to a specific document collection in a specific database
     # https://pymongo.readthedocs.io/en/stable/api/pymongo/asynchronous/database.html
-    database = asyncmongoclient.get_database(kwargs.get('database', 'test'))
+    database = asyncmongoclient.get_database(kwargs.get("database", "test"))
     logging.debug(f"{name} make_app - database.name: {database.name!r}")
     # https://pymongo.readthedocs.io/en/stable/api/pymongo/asynchronous/collection.html
     collection = database.get_collection(kwargs.get("collection", "test"))
     logging.debug(f"{name} make_app - collection.name: {collection.name!r}")
 
     ## 'default_query_filter' is a query document that selects which document(s) to include in the result set
-    default_query_filter = json.loads(kwargs.get('default_query_filter', {}))
+    default_query_filter = json.loads(kwargs.get("default_query_filter", {}))
     logging.debug(f"{name} make_app - default_query_filter: {default_query_filter!r}")
 
     ## Initialize the default query options
-    default_query_options = json.loads(kwargs.get('default_query_options', {}))
+    default_query_options = json.loads(kwargs.get("default_query_options", {}))
     logging.debug(f"{name} make_app - default_query_options: {default_query_options!r}")
 
     return tornado.web.Application(

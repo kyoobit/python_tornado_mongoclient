@@ -19,13 +19,13 @@ class FindHandler(tornado.web.RequestHandler):
 
         # Default response document
         response = {
-            'count': 0,
-            'result': [],
+            "count": 0,
+            "result": [],
         }
 
         # Use the application database document collection
         # https://pymongo.readthedocs.io/en/stable/api/pymongo/asynchronous/collection.html
-        collection = self.settings.get('collection')
+        collection = self.settings.get("collection")
 
         # Build the database query for this request
         try:
@@ -43,21 +43,22 @@ class FindHandler(tornado.web.RequestHandler):
         # https://pymongo.readthedocs.io/en/stable/api/pymongo/asynchronous/collection.html#pymongo.asynchronous.collection.AsyncCollection.find
         # https://pymongo.readthedocs.io/en/stable/api/pymongo/asynchronous/cursor.html#pymongo.asynchronous.cursor.AsyncCursor
         cursor = collection.find(**query)
-        documents = await cursor.to_list(query.get('limit'))
+        documents = await cursor.to_list(query.get("limit"))
         if documents:
-            response.update(count = len(documents))
-            response.update(result = documents)
-        if self.settings.get('debug', False):
-            response.update(database = collection.database.name)
-            response.update(collection = collection.name)
-            response.update(query = query)
+            response.update(count=len(documents))
+            response.update(result=documents)
+        if self.settings.get("debug", False):
+            response.update(database=collection.database.name)
+            response.update(collection=collection.name)
+            response.update(query=query)
         # Normalize the response into a JSON formatted response
         self.set_header("Server", "Python/Tornado/MongoClient")
-        self.set_header('Content-Type', 'text/json')
-        response = json.dumps(response,
+        self.set_header("Content-Type", "text/json")
+        response = json.dumps(
+            response,
             indent=4,
-            separators=(',', ': '),
+            separators=(",", ": "),
             sort_keys=True,
             cls=ExtendedJSONEncoder,
-            )
-        self.write(response + '\n')
+        )
+        self.write(response + "\n")
