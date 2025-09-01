@@ -27,12 +27,12 @@ def operator_value(field: str, value: str):
         # Non-standard operators
         case "$between":
             # sugar for creating a `$gte+$lte' filter
-            gte, lte = v.split(",")
+            gte, lte = value.split(",")
             return field, {
                 "$gte": datetime.fromisoformat(gte),
                 "$lte": datetime.fromisoformat(lte),
             }
-        ## Comparison operators
+        # Comparison operators
         case "$lte":
             # https://docs.mongodb.com/manual/reference/operator/query/lte/
             return field, {"$lte": value}
@@ -60,7 +60,7 @@ def operator_value(field: str, value: str):
         case "$nin":
             # https://docs.mongodb.com/manual/reference/operator/query/nin/
             return field, {"$nin": value.split(",")}
-        ## Logical operators
+        # Logical operators
         case "$and" | "$only":
             # https://docs.mongodb.com/manual/reference/operator/query/and/
             return "$and", [{field: word} for word in value.split(",")]
@@ -74,43 +74,43 @@ def operator_value(field: str, value: str):
         case "$or" | "$any":
             # https://docs.mongodb.com/manual/reference/operator/query/or/
             return "$or", [{field: word} for word in value.split(",")]
-        ## Element operators
+        # Element operators
         case "$exists":
             # https://docs.mongodb.com/manual/reference/operator/query/exists/
             return field, {"$exists": value}
-        #'$type'
+        # case '$type'
         # Evaluation operators
-        #'$expr'
-        #'$jsonSchema'
-        #'$mod'
+        # case '$expr'
+        # case '$jsonSchema'
+        # case '$mod'
         case "$regex":
             # https://docs.mongodb.com/manual/reference/operator/query/regex/
             return field, {"$regex": value, "$options": "i"}
         case "$text" | "$search":
             # https://docs.mongodb.com/manual/reference/operator/query/text/
             return "$text", {"$search": unquote_plus(value)}
-        #'$where'
+        # case '$where'
         # Geospatial operators
-        #'$geoIntersects'
-        #'$geoWithin'
-        #'$near'
-        #'$nearSphere'
+        # case '$geoIntersects'
+        # case '$geoWithin'
+        # case '$near'
+        # case '$nearSphere'
         # Array operators
-        #'$all'
-        #'$elemMatch'
-        #'$size'
+        # case '$all'
+        # case '$elemMatch'
+        # case '$size'
         # Bitwise operators
-        #'$bitsAllClear'
-        #'$bitsAllSet'
-        #'$bitsAnyClear'
-        #'$bitsAnySet'
+        # case '$bitsAllClear'
+        # case '$bitsAllSet'
+        # case '$bitsAnyClear'
+        # case '$bitsAnySet'
         # Comments operators
-        #'$comment'
+        # case '$comment'
         # Projection operators
-        #'$'
-        #'$elemMatch'
-        #'$meta'
-        #'$slice'
+        # case '$'
+        # case '$elemMatch'
+        # case '$meta'
+        # case '$slice'
         case _:
             logging.warning(f"Case not matched for: {operator!r}")
 

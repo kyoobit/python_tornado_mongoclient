@@ -38,7 +38,7 @@ if __name__ == "__main__":
         help="Set the port to listen for HTTP traffic (default: 8888)",
     )
 
-    ## Database specific arguments
+    # Database specific arguments
     parser.add_argument(
         "--mongodb",
         metavar="<uri>",

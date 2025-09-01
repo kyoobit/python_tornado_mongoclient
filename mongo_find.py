@@ -35,7 +35,7 @@ class FindHandler(tornado.web.RequestHandler):
             logging.warning(f"{name} get - {err!r}")
             self.set_status(400)
             return
-        except:
+        except BaseException:
             raise
         logging.info(f"{collection.database.name}.{collection.name}.find({query!r})")
 
