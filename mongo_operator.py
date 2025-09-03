@@ -7,6 +7,12 @@ from urllib.parse import unquote_plus
 def operator_value(field: str, value: str):
     """Expand operator string values"""
 
+    # Catch bool conversion
+    if value == "true":
+        return field, True
+    elif value == "false":
+        return field, False
+
     # Catch and exit when not an unprocessed operator
     if not isinstance(value, str) or not value.startswith("$"):
         return field, value
@@ -33,9 +39,6 @@ def operator_value(field: str, value: str):
                 "$lte": datetime.fromisoformat(lte),
             }
         # Comparison operators
-        case "$lte":
-            # https://docs.mongodb.com/manual/reference/operator/query/lte/
-            return field, {"$lte": value}
         case "$eq":
             # https://docs.mongodb.com/manual/reference/operator/query/eq/
             return field, {"$eq": value}
@@ -45,9 +48,6 @@ def operator_value(field: str, value: str):
         case "$gte":
             # https://docs.mongodb.com/manual/reference/operator/query/gte/
             return field, {"$gte": value}
-        case "$in":
-            # https://docs.mongodb.com/manual/reference/operator/query/in/
-            return field, {"$in": value.split(",")}
         case "$lt":
             # https://docs.mongodb.com/manual/reference/operator/query/lt/
             return field, {"$lt": value}
@@ -57,13 +57,16 @@ def operator_value(field: str, value: str):
         case "$ne":
             # https://docs.mongodb.com/manual/reference/operator/query/ne/
             return field, {"$ne": value}
-        case "$nin":
-            # https://docs.mongodb.com/manual/reference/operator/query/nin/
-            return field, {"$nin": value.split(",")}
         # Logical operators
         case "$and" | "$only":
             # https://docs.mongodb.com/manual/reference/operator/query/and/
             return "$and", [{field: word} for word in value.split(",")]
+        case "$in":
+            # https://docs.mongodb.com/manual/reference/operator/query/in/
+            return field, {"$in": value.split(",")}
+        case "$nin":
+            # https://docs.mongodb.com/manual/reference/operator/query/nin/
+            return field, {"$nin": value.split(",")}
         case "$not":
             # https://docs.mongodb.com/manual/reference/operator/query/not/
             o, e = value.split(":", 1)

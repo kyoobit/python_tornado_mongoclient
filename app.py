@@ -40,11 +40,6 @@ def log_function(handler, *args, **kwargs):
 
 class DefaultHandler(tornado.web.RequestHandler):
 
-    def initialize(self, **kwargs):
-        name = f"{Path(__file__).name} -"
-        logging.debug(f"{name} initialize - **kwargs: {kwargs!r}")
-        self.set_header("Server", "Python/Tornado/MongoClient")
-
     def get(self, *args, **kwargs):
         name = f"{Path(__file__).name} -"
         logging.debug(f"{name} get - *args: {args!r}")
@@ -56,11 +51,6 @@ class DefaultHandler(tornado.web.RequestHandler):
 
 class PingHandler(tornado.web.RequestHandler):
 
-    def initialize(self, **kwargs):
-        name = f"{Path(__file__).name} -"
-        logging.debug(f"{name} initialize - **kwargs: {kwargs!r}")
-        self.set_header("Server", "Python/Tornado/MongoClient")
-
     def get(self, *args, **kwargs):
         name = f"{Path(__file__).name} -"
         logging.debug(f"{name} get - *args: {args!r}")
@@ -71,11 +61,6 @@ class PingHandler(tornado.web.RequestHandler):
 
 
 class HealthCheckHandler(tornado.web.RequestHandler):
-
-    def initialize(self, **kwargs):
-        name = f"{Path(__file__).name} -"
-        logging.debug(f"{name} initialize - **kwargs: {kwargs!r}")
-        self.set_header("Server", "Python/Tornado/MongoClient")
 
     def get(self, *args, **kwargs):
         name = f"{Path(__file__).name} -"
@@ -103,31 +88,39 @@ def make_app(*args, **kwargs):
             # (r".*/insert_one", InsertOneHandler),
         ]
 
+    # Use a MagicMock collection instead of a pymongo asynchronous collection
+    if kwargs.get("mock_collection", False):
+        logging.warning("Using a mock database!")
+        asyncmongoclient = "mock_client"
+        database = "mock_database"
+        collection = kwargs.get("mock_collection")
+
     # MongoDB PyMongo AsyncMongoClient
     # https://pymongo.readthedocs.io/en/4.13.0/api/pymongo/asynchronous/index.html
     # https://pymongo.readthedocs.io/en/stable/api/pymongo/asynchronous/mongo_client.html
-    logging.info(
-        f"Using pymongo.AsyncMongoClient: {kwargs.get('mongodb', 'mongodb://127.0.0.1:27017')}"
-    )
-    asyncmongoclient = AsyncMongoClient(
-        kwargs.get("mongodb", "mongodb://127.0.0.1:27017"),
-        username=kwargs.get("username"),
-        password=kwargs.get("password"),
-        connectTimeoutMS=int(
-            kwargs.get("connectTimeoutMS", 5000)
-        ),  # driver default is 20000 ms
-        serverSelectionTimeoutMS=int(
-            kwargs.get("serverSelectionTimeoutMS", 5000)
-        ),  # driver default is ???? ms
-        appname=kwargs.get("appname", "PyTornadoMongoClient"),
-    )
-    # Database connection to a specific document collection in a specific database
-    # https://pymongo.readthedocs.io/en/stable/api/pymongo/asynchronous/database.html
-    database = asyncmongoclient.get_database(kwargs.get("database", "test"))
-    logging.debug(f"{name} make_app - database.name: {database.name!r}")
-    # https://pymongo.readthedocs.io/en/stable/api/pymongo/asynchronous/collection.html
-    collection = database.get_collection(kwargs.get("collection", "test"))
-    logging.debug(f"{name} make_app - collection.name: {collection.name!r}")
+    else:
+        logging.info(
+            f"Using pymongo.AsyncMongoClient: {kwargs.get('mongodb', 'mongodb://127.0.0.1:27017')}"
+        )
+        asyncmongoclient = AsyncMongoClient(
+            kwargs.get("mongodb", "mongodb://127.0.0.1:27017"),
+            username=kwargs.get("username"),
+            password=kwargs.get("password"),
+            connectTimeoutMS=int(
+                kwargs.get("connectTimeoutMS", 5000)
+            ),  # driver default is 20000 ms
+            serverSelectionTimeoutMS=int(
+                kwargs.get("serverSelectionTimeoutMS", 5000)
+            ),  # driver default is ???? ms
+            appname=kwargs.get("appname", "PyTornadoMongoClient"),
+        )
+        # Database connection to a specific document collection in a specific database
+        # https://pymongo.readthedocs.io/en/stable/api/pymongo/asynchronous/database.html
+        database = asyncmongoclient.get_database(kwargs.get("database", "test"))
+        logging.debug(f"{name} make_app - database.name: {database.name!r}")
+        # https://pymongo.readthedocs.io/en/stable/api/pymongo/asynchronous/collection.html
+        collection = database.get_collection(kwargs.get("collection", "test"))
+        logging.debug(f"{name} make_app - collection.name: {collection.name!r}")
 
     # 'default_query_filter' is a query document that selects which document(s) to include in the result set
     default_query_filter = json.loads(kwargs.get("default_query_filter", "{}"))

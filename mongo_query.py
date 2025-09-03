@@ -94,8 +94,12 @@ def set_option_limit(request, query: dict) -> dict:
     # Allow a limit to be specified by a request argument of 'limit'
     elif request.arguments.get("limit") is not None:
         limit = int(request.arguments.get("limit")[-1])
+        # Enforce a positive int
         if limit >= 1:
             query.update(limit=limit)
+        # Apply a default when zero or less
+        else:
+            query.update(limit=10)
 
     # Always set a default when a value is not set
     if query.get("limit") is None:
@@ -110,12 +114,11 @@ def set_option_projection(request, query) -> dict:
 
     # Allow a projection to be specified by a request argument of 'projection'
     # Only when a projection was not already set by default_query_options
-    if (
-        query.get("projection") is None
-        and request.arguments.get("projection") is not None
-    ):
-        projection = request.arguments.get("projection")[-1].decode().split(",")
-        query.update(projection=projection)
+    if request.arguments.get("projection") is not None:
+        projection = request.arguments.get("projection")[-1].decode()
+        if projection != "":
+            projection = projection.split(",")
+            query.update(projection=projection)
 
     logging.debug(f"{prefix} - query['projection']: {query.get('projection')!r}")
     return query
@@ -127,7 +130,10 @@ def set_option_skip(request, query) -> dict:
     # Allow skip to be specified by a request argument of 'skip'
     if request.arguments.get("skip") is not None:
         skip = int(request.arguments.get("skip")[-1])
-        query.update(skip=skip)
+        if skip >= 1:
+            query.update(skip=skip)
+        else:
+            query.update(skip=0)
 
     logging.debug(f"{prefix} - query['skip']: {query.get('skip')!r}")
     return query
@@ -139,13 +145,14 @@ def set_option_sort(request, query) -> dict:
     # Allow sort to be specified by a request argument key of 'sort'
     if request.arguments.get("sort") is not None:
         sort = request.arguments.get("sort")[-1].decode()
-        if sort.startswith("-"):
-            # pymongo.DESCENDING = -1 Descending sort order.
-            sort = [(sort[1:], -1)]  # descending
-        else:
-            # pymongo.ASCENDING = 1 Ascending sort order.
-            sort = [(sort, 1)]  # ascending
-        query.update(sort=sort)
+        if sort:
+            if sort.startswith("-"):
+                # pymongo.DESCENDING = -1 Descending sort order.
+                sort = [(sort[1:], -1)]  # descending
+            else:
+                # pymongo.ASCENDING = 1 Ascending sort order.
+                sort = [(sort, 1)]  # ascending
+            query.update(sort=sort)
 
     logging.debug(f"{prefix} - query['sort']: {query.get('sort')!r}")
     return query
