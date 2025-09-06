@@ -1,11 +1,36 @@
 import datetime
 import unittest
 
+# https://pymongo.readthedocs.io/en/stable/
+from bson.objectid import ObjectId
+from bson.errors import InvalidId
+
+import pytest
+
 from mongo_operator import operator_value
 
 
 # https://docs.python.org/3/library/unittest.html#unittest.TestCase
 class TestOperatorValue(unittest.TestCase):
+
+    def test_objectid(self):
+        field, value = operator_value("_id", "abcdef0123456789abcdef01")
+        print(f"field: {field!r}, value: {value!r}")
+        # Check the query values for expected values
+        self.assertEqual(field, "_id")
+        self.assertIsInstance(value, ObjectId)
+
+    def test_objectid_none(self):
+        field, value = operator_value("_id", None)
+        print(f"field: {field!r}, value: {value!r}")
+        # Check the query values for expected values
+        self.assertEqual(field, "_id")
+        self.assertIsNone(value)
+
+    def test_objectid_error(self):
+        # https://pymongo.readthedocs.io/en/stable/api/bson/errors.html#bson.errors.InvalidId
+        with pytest.raises(InvalidId):
+            field, value = operator_value("_id", "an invalid _id")
 
     def test_bool_true(self):
         field, value = operator_value("field", "true")

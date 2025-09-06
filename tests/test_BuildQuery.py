@@ -2,6 +2,9 @@ import unittest
 
 from unittest.mock import MagicMock
 
+# https://pymongo.readthedocs.io/en/stable/
+from bson.objectid import ObjectId
+
 from mongo_query import build_query
 
 
@@ -18,6 +21,24 @@ class TestBuildQuery(unittest.TestCase):
         print(f"query: {query!r}")
         # Check the query values for expected values
         self.assertEqual(query, {"limit": 1, "filter": {}})
+
+    def test_filter_objectid(self):
+        settings = {"default_query_filter": {}}
+        request = MagicMock()
+        request.arguments = {"_id": [b"abcdef0123456789abcdef01"]}
+        # Build the query using the inputs
+        query = build_query(settings, request)
+        print(f"query: {query!r}")
+        # Check the query values for expected values
+        self.assertEqual(query["filter"], {"_id": ObjectId("abcdef0123456789abcdef01")})
+
+        # ObjectId should not be cached
+        request.arguments = {"_id": [b"abcdef0123456789abcdef02"]}
+        # Build the query using the inputs
+        query = build_query(settings, request)
+        print(f"query: {query!r}")
+        # Check the query values for expected values
+        self.assertEqual(query["filter"], {"_id": ObjectId("abcdef0123456789abcdef02")})
 
     def test_filter_bool_no_default(self):
         settings = {"default_query_filter": {}}

@@ -3,9 +3,17 @@ import logging
 from datetime import datetime, timezone
 from urllib.parse import unquote_plus
 
+# https://pymongo.readthedocs.io/en/stable/
+from bson.objectid import ObjectId
+
 
 def operator_value(field: str, value: str):
     """Expand operator string values"""
+
+    # Catch ObjectId conversion
+    # https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId
+    if field == "_id" and isinstance(value, str):
+        return field, ObjectId(value)
 
     # Catch bool conversion
     if value == "true":
