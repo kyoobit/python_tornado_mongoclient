@@ -69,7 +69,7 @@ class TestUpdateOneHandler(tornado.testing.AsyncHTTPTestCase):
 
         return make_app(debug=True, mock_collection=mock_collection, admin=True)
 
-    def test_insert_one_wo_objectid(self):
+    def test_update_one_wo_objectid(self):
         for path, options, status_code in [
             # REQUEST: (path:str, options:dict, status_code:int)
             ("/update_one", {"method": "GET"}, 400),
@@ -80,7 +80,7 @@ class TestUpdateOneHandler(tornado.testing.AsyncHTTPTestCase):
             # Check response code for the expected value
             self.assertEqual(response.code, status_code)
 
-    def test_insert_one_invalid_objectid(self):
+    def test_update_one_invalid_objectid(self):
         for path, options, status_code in [
             # REQUEST: (path:str, options:dict, status_code:int)
             ("/update_one?_id=invalidid", {"method": "GET"}, 400),
@@ -91,7 +91,7 @@ class TestUpdateOneHandler(tornado.testing.AsyncHTTPTestCase):
             # Check response code for the expected value
             self.assertEqual(response.code, status_code)
 
-    def test_insert_one(self):
+    def test_update_one(self):
         for path, options, status_code in [
             # REQUEST: (path:str, options:dict, status_code:int)
             (
