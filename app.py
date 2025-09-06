@@ -12,6 +12,7 @@ from tornado.log import access_log
 from pymongo import AsyncMongoClient
 
 from mongo_find import FindHandler
+from mongo_count_documents import CountDocumentsHandler
 
 
 def log_function(handler, *args, **kwargs):
@@ -75,6 +76,7 @@ def make_app(*args, **kwargs):
 
     # Read-only route handlers
     routes = [
+        (r".*/count_documents", CountDocumentsHandler),
         (r".*/find", FindHandler),
         (r".*/find_one", FindHandler),
         (r".*/healthcheck", HealthCheckHandler),
