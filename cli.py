@@ -81,6 +81,11 @@ if __name__ == "__main__":
         default=os.environ.get("MONGO_QUERY_OPTIONS", "{}"),
         help='A JSON document that sets default query options (Default: "{}")',
     )
+    parser.add_argument(
+        "--admin",
+        action="store_true",
+        help="Run with admin write routes enabled (Default: False)",
+    )
 
     parser.add_argument("--version", "-V", action="version", version=DEFAULT_NAME)
     parser.add_argument(
