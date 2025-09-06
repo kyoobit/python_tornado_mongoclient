@@ -12,8 +12,7 @@ from tornado.log import access_log
 from pymongo import AsyncMongoClient
 
 from mongo_count_documents import CountDocumentsHandler
-
-# from mongo_delete_one import DeleteOneHandler
+from mongo_delete_one import DeleteOneHandler
 from mongo_find import FindHandler
 from mongo_insert_one import InsertOneHandler
 from mongo_update_one import UpdateOneHandler
@@ -99,7 +98,7 @@ def make_app(*args, **kwargs):
     # Read-write route handlers
     if kwargs.get("admin", False):
         routes += [
-            # (r".*/delete_one", DeleteOneHandler),
+            (r".*/delete_one", DeleteOneHandler),
             (r".*/insert_one", InsertOneHandler),
             (r".*/update_one", UpdateOneHandler),
         ]
