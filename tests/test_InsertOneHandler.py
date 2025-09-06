@@ -29,7 +29,7 @@ class TestInsertOneHandler_wo_Admin(tornado.testing.AsyncHTTPTestCase):
         # https://pymongo.readthedocs.io/en/stable/api/pymongo/results.html#pymongo.results.InsertOneResult
         insertoneresult = InsertOneResult("mock_document_id", True)
 
-        # Mock collection find method to return a cursor
+        # Mock collection insert_one method to return an InsertOneResult instance
         mock_collection.insert_one = AsyncMock(return_value=insertoneresult)
 
         return make_app(debug=True, mock_collection=mock_collection)
@@ -60,12 +60,11 @@ class TestInsertOneHandler(tornado.testing.AsyncHTTPTestCase):
         mock_collection.database = mock_database
         mock_collection.name = "mock_collection"
 
-        # Mock InsertOneResult
-        insertoneresult = MagicMock()
-        insertoneresult.inserted_id = "mock_document_id"
-        insertoneresult.acknowledged = True
+        # Mock InsertOneResult instance
+        # https://pymongo.readthedocs.io/en/stable/api/pymongo/results.html#pymongo.results.InsertOneResult
+        insertoneresult = InsertOneResult("mock_document_id", True)
 
-        # Mock collection find method to return a cursor
+        # Mock collection insert_one method to return an InsertOneResult instance
         mock_collection.insert_one = AsyncMock(return_value=insertoneresult)
 
         return make_app(debug=True, mock_collection=mock_collection, admin=True)
@@ -87,7 +86,7 @@ class TestInsertOneHandler(tornado.testing.AsyncHTTPTestCase):
             self.assertEqual(response_json.get("count"), 1)
             self.assertIsNotNone(response_json["document"]["ctime"])
             self.assertIsNotNone(response_json["document"]["mtime"])
-            self.assertIsInstance(response_json["result"], list)
+            self.assertIsInstance(response_json["result"][0], dict)
 
     def test_insert_one(self):
         for path, options, status_code in [
@@ -107,4 +106,4 @@ class TestInsertOneHandler(tornado.testing.AsyncHTTPTestCase):
             self.assertIsNotNone(response_json["document"]["ctime"])
             self.assertIsNotNone(response_json["document"]["mtime"])
             self.assertEqual(response_json["document"]["key"], "value")
-            self.assertIsInstance(response_json["result"], list)
+            self.assertIsInstance(response_json["result"][0], dict)
