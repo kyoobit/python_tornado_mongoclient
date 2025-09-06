@@ -66,7 +66,7 @@ class UpdateOneHandler(tornado.web.RequestHandler):
         now = datetime.now(tz=timezone.utc)
         update.update(mtime=now)
         # Add update to the document
-        document.update(update=update)
+        document.update(update={"$set": update})
         logging.info(
             f"{collection.database.name}.{collection.name}.update_one({document!r})"
         )
