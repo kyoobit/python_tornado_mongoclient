@@ -16,8 +16,7 @@ from mongo_count_documents import CountDocumentsHandler
 # from mongo_delete_one import DeleteOneHandler
 from mongo_find import FindHandler
 from mongo_insert_one import InsertOneHandler
-
-# from mongo_update_one import UpdateOneHandler
+from mongo_update_one import UpdateOneHandler
 
 
 def log_function(handler, *args, **kwargs):
@@ -102,7 +101,7 @@ def make_app(*args, **kwargs):
         routes += [
             # (r".*/delete_one", DeleteOneHandler),
             (r".*/insert_one", InsertOneHandler),
-            # (r".*/update_one", UpdateOneHandler),
+            (r".*/update_one", UpdateOneHandler),
         ]
         logging.warning("Admin read-write routes are enabled!")
 
