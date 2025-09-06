@@ -22,7 +22,7 @@ class TestCountDocumentsHandler(tornado.testing.AsyncHTTPTestCase):
         mock_collection.database = mock_database
         mock_collection.name = "mock_collection"
 
-        # Mock collection find method to return a cursor
+        # Mock collection count_documents method to return a cursor
         mock_collection.count_documents = AsyncMock(return_value=999)
 
         return make_app(debug=True, mock_collection=mock_collection)
