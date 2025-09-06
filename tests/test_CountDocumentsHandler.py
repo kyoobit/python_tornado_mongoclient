@@ -1,6 +1,6 @@
 import json
 
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 
 # https://www.tornadoweb.org/en/stable/
 import tornado
@@ -23,7 +23,7 @@ class TestFindHandler(tornado.testing.AsyncHTTPTestCase):
         mock_collection.name = "mock_collection"
 
         # Mock collection find method to return a cursor
-        mock_collection.count_documents = MagicMock(return_value=999)
+        mock_collection.count_documents = AsyncMock(return_value=999)
 
         return make_app(debug=True, mock_collection=mock_collection)
 

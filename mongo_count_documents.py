@@ -45,7 +45,7 @@ class CountDocumentsHandler(tornado.web.RequestHandler):
 
         # Query the database for matching documents
         # https://pymongo.readthedocs.io/en/stable/api/pymongo/asynchronous/collection.html#pymongo.asynchronous.collection.AsyncCollection.count_documents
-        count = collection.count_documents(**query)
+        count = await collection.count_documents(**query)
         response.update(count=count)
         if self.settings.get("debug", False):
             response.update(database=collection.database.name)
