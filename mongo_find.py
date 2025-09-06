@@ -48,6 +48,7 @@ class FindHandler(tornado.web.RequestHandler):
             response.update(count=len(documents))
             response.update(result=documents)
         if self.settings.get("debug", False):
+            self.set_header("X-Debug", "route=FindkHandler.get")
             response.update(database=collection.database.name)
             response.update(collection=collection.name)
             response.update(query=query)

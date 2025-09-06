@@ -48,6 +48,7 @@ class CountDocumentsHandler(tornado.web.RequestHandler):
         count = await collection.count_documents(**query)
         response.update(count=count)
         if self.settings.get("debug", False):
+            self.set_header("X-Debug", "route=CountDocumentskHandler.get")
             response.update(database=collection.database.name)
             response.update(collection=collection.name)
             response.update(query=query)

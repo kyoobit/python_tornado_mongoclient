@@ -11,8 +11,8 @@ from tornado.log import access_log
 # https://pymongo.readthedocs.io/en/stable/
 from pymongo import AsyncMongoClient
 
-from mongo_find import FindHandler
 from mongo_count_documents import CountDocumentsHandler
+from mongo_find import FindHandler
 
 
 def log_function(handler, *args, **kwargs):
@@ -46,6 +46,9 @@ class DefaultHandler(tornado.web.RequestHandler):
         logging.debug(f"{name} get - *args: {args!r}")
         logging.debug(f"{name} get - **kwargs: {kwargs!r}")
 
+        if self.settings.get("debug", False):
+            self.set_header("X-Debug", "route=DefaultHandler.get")
+
         # Always return 204
         self.set_status(204)
 
@@ -57,6 +60,9 @@ class PingHandler(tornado.web.RequestHandler):
         logging.debug(f"{name} get - *args: {args!r}")
         logging.debug(f"{name} get - **kwargs: {kwargs!r}")
 
+        if self.settings.get("debug", False):
+            self.set_header("X-Debug", "route=PingHandler.get")
+
         # Always return 200 Pong!
         self.write({"ping": "pong"})
 
@@ -67,6 +73,9 @@ class HealthCheckHandler(tornado.web.RequestHandler):
         name = f"{Path(__file__).name} -"
         logging.debug(f"{name} get - *args: {args!r}")
         logging.debug(f"{name} get - **kwargs: {kwargs!r}")
+
+        if self.settings.get("debug", False):
+            self.set_header("X-Debug", "route=HealthCheckHandler.get")
 
         raise NotImplementedError("HealthCheckHandler, ...work to do!")
 
@@ -81,14 +90,18 @@ def make_app(*args, **kwargs):
         (r".*/find_one", FindHandler),
         (r".*/healthcheck", HealthCheckHandler),
         (r".*/ping", PingHandler),
-        (r"/.*", DefaultHandler),
     ]
 
     # Read-write route handlers
-    if kwargs.get("--admin", False):
+    if kwargs.get("admin", False):
         routes += [
-            # (r".*/insert_one", InsertOneHandler),
+            #(r".*/insert_one", InsertOneHandler),
         ]
+        logging.warning(f"Admin read-write routes are enabled!")
+
+    # Always add the default catch-all route last
+    routes.append((r"/.*", DefaultHandler))
+    logging.debug(f"{name} make_app - routes: {routes!r}")
 
     # Use a MagicMock collection instead of a pymongo asynchronous collection
     if kwargs.get("mock_collection", False):
