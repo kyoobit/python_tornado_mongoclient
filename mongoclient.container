@@ -1,0 +1,30 @@
+[Unit]
+Description=MongoClient Container Service
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+Image=ghcr.io/kyoobit/tornado-mongoclient:latest
+ContainerName=mongoclient
+PublishPort=8892:8888
+EnvironmentFile=/home/podrunner/.config/containers/mongoclient.env
+Exec=--systemd --verbose
+# Ensure the container runs in foreground mode
+PodmanArgs=--log-driver=journald
+
+[Service]
+Type=notify
+NotifyAccess=all
+Restart=always
+TimeoutStartSec=900
+TimeoutStopSec=70
+
+[Install]
+WantedBy=default.target
+
+# Podman rootless Quadlet-generated systemd unit
+# https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html
+# ~/.config/containers/systemd/mongoclient.container
+# systemctl --user daemon-reload
+# systemctl --user start mongoclient.service
+# systemctl --user status mongoclient.service
