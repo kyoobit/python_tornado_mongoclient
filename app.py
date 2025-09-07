@@ -142,6 +142,11 @@ def make_app(*args, **kwargs):
         collection = database.get_collection(kwargs.get("collection", "test"))
         logging.debug(f"{name} make_app - collection.name: {collection.name!r}")
 
+    # Reduce the amount of noise from pymongo when running with debug
+    # https://pymongo.readthedocs.io/en/stable/examples/logging.html
+    if kwargs.get("debug", False):
+        logging.getLogger("pymongo").setLevel(logging.INFO)
+
     # 'default_query_filter' is a query document that selects which document(s) to include in the result set
     default_query_filter = json.loads(kwargs.get("default_query_filter", "{}"))
     logging.debug(f"{name} make_app - default_query_filter: {default_query_filter!r}")
