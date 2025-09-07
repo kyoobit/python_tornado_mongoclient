@@ -111,5 +111,7 @@ class TestUpdateOneHandler(tornado.testing.AsyncHTTPTestCase):
             # Check response JSON for expected values
             self.assertEqual(response_json.get("count"), 1)
             self.assertIsNotNone(response_json["document"]["update"]["$set"]["mtime"])
-            self.assertEqual(response_json["document"]["update"]["$set"]["key"], "value")
+            self.assertEqual(
+                response_json["document"]["update"]["$set"]["key"], "value"
+            )
             self.assertIsInstance(response_json["result"][0], dict)
