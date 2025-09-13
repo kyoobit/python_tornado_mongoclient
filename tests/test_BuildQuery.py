@@ -1,5 +1,6 @@
 import unittest
 
+from datetime import datetime
 from unittest.mock import MagicMock
 
 # https://pymongo.readthedocs.io/en/stable/
@@ -39,6 +40,20 @@ class TestBuildQuery(unittest.TestCase):
         print(f"query: {query!r}")
         # Check the query values for expected values
         self.assertEqual(query["filter"], {"_id": ObjectId("abcdef0123456789abcdef02")})
+
+    def test_filter_datetime(self):
+        settings = {"default_query_filter": {}}
+        request = MagicMock()
+        request.arguments = {
+            "ctime": [b"2025-09-13T13:42:24"],
+            "mtime": [b"2025-09-13 13:42:24"],
+        }
+        # Build the query using the inputs
+        query = build_query(settings, request)
+        print(f"query: {query!r}")
+        # Check the query values for expected values
+        self.assertEqual(query["filter"]["ctime"], datetime(2025, 9, 13, 13, 42, 24))
+        self.assertEqual(query["filter"]["mtime"], datetime(2025, 9, 13, 13, 42, 24))
 
     def test_filter_bool_no_default(self):
         settings = {"default_query_filter": {}}

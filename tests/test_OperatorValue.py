@@ -1,5 +1,6 @@
-import datetime
 import unittest
+
+from datetime import datetime
 
 # https://pymongo.readthedocs.io/en/stable/
 from bson.objectid import ObjectId
@@ -53,6 +54,13 @@ class TestOperatorValue(unittest.TestCase):
         self.assertEqual(field, "field")
         self.assertEqual(value, None)
 
+    def test_datetime(self):
+        field, value = operator_value("field", "2025-09-13T13:42:24")
+        print(f"field: {field!r}, value: {value!r}")
+        # Check the query values for expected values
+        self.assertEqual(field, "field")
+        self.assertEqual(value, datetime(2025, 9, 13, 13, 42, 24))
+
     def test_not_an_operator(self):
         field, value = operator_value("field", "value")
         print(f"field: {field!r}, value: {value!r}")
@@ -72,7 +80,7 @@ class TestOperatorValue(unittest.TestCase):
         print(f"field: {field!r}, value: {value!r}")
         # Check the query values for expected values
         self.assertEqual(field, "field")
-        self.assertIsInstance(value, datetime.datetime)
+        self.assertIsInstance(value, datetime)
 
     def test_operator_between(self):
         field, value = operator_value(
@@ -82,8 +90,8 @@ class TestOperatorValue(unittest.TestCase):
         # Check the query values for expected values
         self.assertEqual(field, "field")
         self.assertIsInstance(value, dict)
-        self.assertIsInstance(value["$gte"], datetime.datetime)
-        self.assertIsInstance(value["$lte"], datetime.datetime)
+        self.assertIsInstance(value["$gte"], datetime)
+        self.assertIsInstance(value["$lte"], datetime)
 
     def test_comparison_operators(self):
         for operator in [
