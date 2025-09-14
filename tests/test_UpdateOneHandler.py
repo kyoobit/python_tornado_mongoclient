@@ -115,3 +115,40 @@ class TestUpdateOneHandler(tornado.testing.AsyncHTTPTestCase):
                 response_json["document"]["update"]["$set"]["key"], "value"
             )
             self.assertIsInstance(response_json["result"][0], dict)
+
+    def test_update_one_nothing_to_do(self):
+        for path, options, status_code in [
+            # REQUEST: (path:str, options:dict, status_code:int)
+            (
+                "/update_one?_id=abcdef0123456789abcdef01",
+                {"method": "GET"},
+                200,
+            ),
+        ]:
+            print(f"path: {path!r}, options: {options!r}")
+            # Make the HTTP request
+            response = self.fetch(f"{path}", **options)
+            # Check response code for the expected value
+            self.assertEqual(response.code, status_code)
+            # The response body must be in valid JSON format
+            response_json = json.loads(response.body)
+            print(f"response_json: {response_json!r}")
+            # Check response JSON for expected values
+            self.assertEqual(response_json.get("count"), 1)
+            self.assertIsNotNone(response_json["document"]["update"]["$set"]["mtime"])
+            self.assertIsInstance(response_json["result"][0], dict)
+
+    def test_update_one_bad_objectid(self):
+        for path, options, status_code in [
+            # REQUEST: (path:str, options:dict, status_code:int)
+            (
+                "/update_one?_id=bad_objectid",
+                {"method": "GET"},
+                400,
+            ),
+        ]:
+            print(f"path: {path!r}, options: {options!r}")
+            # Make the HTTP request
+            response = self.fetch(f"{path}", **options)
+            # Check response code for the expected value
+            self.assertEqual(response.code, status_code)
