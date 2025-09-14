@@ -22,11 +22,12 @@ def operator_value(field: str, value: str):
         return field, False
 
     # Catch datetime conversion
-    try:
-        value = datetime.fromisoformat(value)
-        return field, value
-    except:
-        pass
+    if isinstance(value, str):
+        try:
+            value = datetime.fromisoformat(value)
+            return field, value
+        except ValueError:
+            pass
 
     # Catch and exit when not an unprocessed operator
     if not isinstance(value, str) or not value.startswith("$"):
