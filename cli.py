@@ -120,9 +120,13 @@ if __name__ == "__main__":
         log_level = logging.INFO
     else:
         log_level = logging.WARNING
+    if argv.systemd:
+        message_fmt = "[app=mongoclient] %(levelname)s - %(message)s"
+    else:
+        message_fmt = "[%(asctime)s] %(levelname)s - %(message)s"
     logging.basicConfig(
-        format="[%(asctime)s] %(levelname)s - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S.%f %Z",
+        format=message_fmt,
+        datefmt="%Y-%m-%d %H:%M:%S %Z",
         level=log_level,
     )
     logging.debug(f"{__name__} - sys.argv: {sys.argv}")
