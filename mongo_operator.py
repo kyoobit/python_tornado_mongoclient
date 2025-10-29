@@ -54,6 +54,9 @@ def operator_value(field: str, value: str):
                 "$gte": datetime.fromisoformat(gte),
                 "$lte": datetime.fromisoformat(lte),
             }
+        case "$list":
+            # parse the value as a comma separated list
+            return field, value.split(",")
         # Comparison operators
         case "$eq":
             # https://docs.mongodb.com/manual/reference/operator/query/eq/

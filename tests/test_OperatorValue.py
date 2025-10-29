@@ -75,6 +75,13 @@ class TestOperatorValue(unittest.TestCase):
         self.assertEqual(field, "field")
         self.assertEqual(value, "value")
 
+    def test_value_as_list(self):
+        field, value = operator_value("field", "$list:a,b,c")
+        print(f"field: {field!r}, value: {value!r}")
+        # Check the query values for expected values
+        self.assertEqual(field, "field")
+        self.assertEqual(value, ["a", "b", "c"])
+
     def test_datetime_now(self):
         field, value = operator_value("field", "$test:$now")
         print(f"field: {field!r}, value: {value!r}")
