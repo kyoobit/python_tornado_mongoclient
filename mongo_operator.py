@@ -11,7 +11,8 @@ def operator_value(field: str, value: str):
     """Expand operator string values"""
 
     # Catch nested field conversion
-    if field.find('.') != -1:
+    if field.startswith('$nested:'):
+        field = field.split(':', 1)[-1]
         field1, field2 = field.split('.', 1)
         field2, value = operator_value(field2, value)
         return field1, {field2: value}
