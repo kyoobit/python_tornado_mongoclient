@@ -82,6 +82,13 @@ class TestOperatorValue(unittest.TestCase):
         self.assertEqual(field, "field")
         self.assertEqual(value, ["a", "b", "c"])
 
+    def test_nested_field(self):
+        field, value = operator_value("nested.field", "true")
+        print(f"field: {field!r}, value: {value!r}")
+        # Check the query values for expected values
+        self.assertEqual(field, "nested")
+        self.assertEqual(value, {"field": True})
+
     def test_datetime_now(self):
         field, value = operator_value("field", "$test:$now")
         print(f"field: {field!r}, value: {value!r}")

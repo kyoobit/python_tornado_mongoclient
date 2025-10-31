@@ -10,6 +10,12 @@ from bson.objectid import ObjectId
 def operator_value(field: str, value: str):
     """Expand operator string values"""
 
+    # Catch nested field conversion
+    if field.find('.') != -1:
+        field1, field2 = field.split('.', 1)
+        field2, value = operator_value(field2, value)
+        return field1, {field2: value}
+
     # Catch ObjectId conversion
     # https://pymongo.readthedocs.io/en/stable/api/bson/objectid.html#bson.objectid.ObjectId
     if field == "_id" and isinstance(value, str):
