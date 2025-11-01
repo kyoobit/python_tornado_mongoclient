@@ -47,6 +47,20 @@ class TestOperatorValue(unittest.TestCase):
         self.assertEqual(field, "field")
         self.assertEqual(value, False)
 
+    def test_int(self):
+        field, value = operator_value("field", "1234")
+        print(f"field: {field!r}, value: {value!r}")
+        # Check the query values for expected values
+        self.assertEqual(field, "field")
+        self.assertEqual(value, 1234)
+
+    def test_float(self):
+        field, value = operator_value("field", "12.34")
+        print(f"field: {field!r}, value: {value!r}")
+        # Check the query values for expected values
+        self.assertEqual(field, "field")
+        self.assertEqual(value, 12.34)
+
     def test_not_a_str(self):
         field, value = operator_value("field", None)
         print(f"field: {field!r}, value: {value!r}")

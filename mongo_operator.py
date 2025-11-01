@@ -36,6 +36,19 @@ def operator_value(field: str, value: str):
         except ValueError:
             pass
 
+    # Catch integer number conversion
+    if isinstance(value, str) and value.isdigit():
+        value = int(value)
+        return field, value
+
+    # Catch float number conversion
+    if isinstance(value, str) and value.find('.') != -1:
+        try:
+            value = float(value)
+            return field, value
+        except ValueError:
+            pass
+
     # Catch and exit when not an unprocessed operator
     if not isinstance(value, str) or not value.startswith("$"):
         return field, value
