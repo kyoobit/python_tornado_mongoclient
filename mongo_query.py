@@ -13,18 +13,21 @@ def build_query(settings, request):
     # Unpack and parse the request arguments
     arguments = {}
     for key, value in request.arguments.items():
-        value = value[-1].decode()  # [..., b'value'] ---> 'value'
-        key, value = operator_value(
-            key, value
-        )  # 'field=$foo:bar' ---> 'field', {'$foo': ['bar']}
+        # Unpack the value [..., b'value'] ---> 'value'
+        value = value[-1].decode()
+        # Process operators 'field=$foo:bar' ---> 'field', {'$foo': ['bar']}
+        key, value = operator_value(key, value)
         arguments[key] = value
     logging.debug(f"{prefix} - arguments: {arguments!r}")
 
-    # Remove known query options from the arguments
+    # Remove known query option key/values from the arguments
     query = copy.deepcopy(settings.get("default_query_options", {}))
     for key in ["limit", "projection", "skip", "sort"]:
-        if arguments.get(key, False):
-            query[key] = arguments.pop(key)
+        if key in arguments.keys():
+            value = arguments.pop(key)
+            # Do not pass on empty values
+            if value != "":
+                query[key] = value
     logging.debug(f"{prefix} - query: {query!r}")
 
     # Handle (re)setting specific query options

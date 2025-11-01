@@ -156,3 +156,16 @@ class TestBuildQuery(unittest.TestCase):
         print(f"query: {query!r}")
         # Check the query values for expected values
         self.assertEqual(query["filter"], {"key": "default"})
+
+    def test_common_usage(self):
+        settings = {"default_query_filter": {}}
+        request = MagicMock()
+        request.arguments = {"sort": [b"-mtime"], "skip": [b"0"], "limit": [b"120"]}
+        # Build the query using the inputs
+        query = build_query(settings, request)
+        print(f"query: {query!r}")
+        # Check the query values for expected values
+        self.assertEqual(query["limit"], 1)
+        self.assertEqual(query["sort"], [("mtime", -1)])
+        self.assertEqual(query["skip"], 0)
+        self.assertEqual(query["filter"], {})
