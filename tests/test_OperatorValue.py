@@ -54,6 +54,13 @@ class TestOperatorValue(unittest.TestCase):
         self.assertEqual(field, "field")
         self.assertEqual(value, 1234)
 
+    def test_nonetype(self):
+        field, value = operator_value("field", "$none")
+        print(f"field: {field!r}, value: {value!r}")
+        # Check the query values for expected values
+        self.assertEqual(field, "field")
+        self.assertIsNone(value)
+
     def test_float(self):
         field, value = operator_value("field", "12.34")
         print(f"field: {field!r}, value: {value!r}")

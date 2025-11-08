@@ -53,11 +53,16 @@ def operator_value(field: str, value: str):
     if not isinstance(value, str) or not value.startswith("$"):
         return field, value
 
-    # Split the operator from the string value
-    operator, value = value.split(":", 1)
+    # Split the operator from the string value ($foo:bar ---> $foo, bar)
+    if value.find(':') != -1:
+        operator, value = value.split(":", 1)
+    else:
+        operator = None
 
     # Match the value expansion format
     match value:
+        case "$none":
+            value = None
         case "$now":
             # Set the value to current UTC date/time
             value = datetime.now(tz=timezone.utc)
@@ -153,6 +158,8 @@ def operator_value(field: str, value: str):
         # case '$elemMatch'
         # case '$meta'
         # case '$slice'
+        case None:
+            return field, value
         case _:
             logging.warning(f"Case not matched for: {operator!r}")
 
