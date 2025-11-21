@@ -107,3 +107,23 @@ class TestInsertOneHandler(tornado.testing.AsyncHTTPTestCase):
             self.assertIsNotNone(response_json["document"]["mtime"])
             self.assertEqual(response_json["document"]["key"], "value")
             self.assertIsInstance(response_json["result"][0], dict)
+
+    def test_insert_one_ctime(self):
+        for path, options, status_code in [
+            # REQUEST: (path:str, options:dict, status_code:int)
+            ("/insert_one?key=value&ctime=2025-11-21T08:13:00", {"method": "GET"}, 200),
+        ]:
+            print(f"path: {path!r}, options: {options!r}")
+            # Make the HTTP request
+            response = self.fetch(f"{path}", **options)
+            # Check response code for the expected value
+            self.assertEqual(response.code, status_code)
+            # The response body must be in valid JSON format
+            response_json = json.loads(response.body)
+            print(f"response_json: {response_json!r}")
+            # Check response JSON for expected values
+            self.assertEqual(response_json.get("count"), 1)
+            self.assertEqual(response_json["document"]["ctime"], "2025-11-21T08:13:00")
+            self.assertIsNotNone(response_json["document"]["mtime"])
+            self.assertEqual(response_json["document"]["key"], "value")
+            self.assertIsInstance(response_json["result"][0], dict)

@@ -45,10 +45,12 @@ class InsertOneHandler(tornado.web.RequestHandler):
             return
         except BaseException:
             raise
-        # Enforce using "now" for ctime/mtime
+        # Enforce using "now" for mtime
         now = datetime.now(tz=timezone.utc)
-        document.update(ctime=now)
         document.update(mtime=now)
+        # Enforce using "now" for ctime when not set
+        if document.get("ctime") is None:
+            document.update(ctime=now)
         logging.info(
             f"{collection.database.name}.{collection.name}.insert_one({document!r})"
         )
