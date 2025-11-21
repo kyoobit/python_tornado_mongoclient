@@ -54,7 +54,7 @@ def operator_value(field: str, value: str):
         return field, value
 
     # Split the operator from the string value ($foo:bar ---> $foo, bar)
-    if value.find(':') != -1:
+    if value.find(":") != -1:
         operator, value = value.split(":", 1)
     else:
         operator = None
