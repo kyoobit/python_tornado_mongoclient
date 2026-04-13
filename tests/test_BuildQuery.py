@@ -11,7 +11,6 @@ from mongo_query import build_query
 
 # https://docs.python.org/3/library/unittest.html#unittest.TestCase
 class TestBuildQuery(unittest.TestCase):
-
     def test_defaults(self):
         # Input setup
         settings = {}

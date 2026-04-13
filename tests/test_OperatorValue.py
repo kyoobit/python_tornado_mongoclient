@@ -13,7 +13,6 @@ from mongo_operator import operator_value
 
 # https://docs.python.org/3/library/unittest.html#unittest.TestCase
 class TestOperatorValue(unittest.TestCase):
-
     def test_objectid(self):
         field, value = operator_value("_id", "abcdef0123456789abcdef01")
         print(f"field: {field!r}, value: {value!r}")

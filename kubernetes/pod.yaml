@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mongoclient
+  namespace: mongodb
+spec:
+  containers:
+    - name: mongoclient
+      image: ghcr.io/kyoobit/tornado-mongoclient:latest
+      args:
+        - --verbose
+      ports:
+        - containerPort: 8888
+          name: "mongoclient"

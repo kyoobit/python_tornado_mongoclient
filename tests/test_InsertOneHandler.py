@@ -14,7 +14,6 @@ from app import make_app
 # https://www.tornadoweb.org/en/stable/testing.html
 # https://docs.python.org/3/library/unittest.html#unittest.TestCase
 class TestInsertOneHandler_wo_Admin(tornado.testing.AsyncHTTPTestCase):
-
     def get_app(self):
         # Mock database instance
         mock_database = MagicMock()
@@ -49,7 +48,6 @@ class TestInsertOneHandler_wo_Admin(tornado.testing.AsyncHTTPTestCase):
 # https://www.tornadoweb.org/en/stable/testing.html
 # https://docs.python.org/3/library/unittest.html#unittest.TestCase
 class TestInsertOneHandler(tornado.testing.AsyncHTTPTestCase):
-
     def get_app(self):
         # Mock database instance
         mock_database = MagicMock()

@@ -43,7 +43,6 @@ def log_function(handler, *args, **kwargs):
 
 
 class DefaultHandler(tornado.web.RequestHandler):
-
     def get(self, *args, **kwargs):
         name = f"{Path(__file__).name} -"
         logging.debug(f"{name} get - *args: {args!r}")
@@ -57,7 +56,6 @@ class DefaultHandler(tornado.web.RequestHandler):
 
 
 class PingHandler(tornado.web.RequestHandler):
-
     def get(self, *args, **kwargs):
         name = f"{Path(__file__).name} -"
         logging.debug(f"{name} get - *args: {args!r}")
@@ -71,7 +69,6 @@ class PingHandler(tornado.web.RequestHandler):
 
 
 class HealthCheckHandler(tornado.web.RequestHandler):
-
     def get(self, *args, **kwargs):
         name = f"{Path(__file__).name} -"
         logging.debug(f"{name} get - *args: {args!r}")

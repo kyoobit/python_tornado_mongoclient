@@ -11,7 +11,6 @@ from mongo_jsonencoder import ExtendedJSONEncoder
 
 # https://docs.python.org/3/library/unittest.html#unittest.TestCase
 class TestJSONEncoder(unittest.TestCase):
-
     def test_encoding_bytes(self):
         encoder = ExtendedJSONEncoder()
         value = encoder.default("value".encode())

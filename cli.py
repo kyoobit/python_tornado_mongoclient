@@ -23,7 +23,6 @@ Run the program:
 """
 
 if __name__ == "__main__":
-
     # Arguments
     # https://docs.python.org/3/library/argparse.html
     parser = argparse.ArgumentParser(

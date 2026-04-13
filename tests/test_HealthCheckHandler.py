@@ -11,7 +11,6 @@ from app import make_app
 # https://www.tornadoweb.org/en/stable/testing.html
 # https://docs.python.org/3/library/unittest.html#unittest.TestCase
 class TestHealthCheckHandler(tornado.testing.AsyncHTTPTestCase):
-
     def get_app(self):
         # Mock database instance
         mock_database = MagicMock()
