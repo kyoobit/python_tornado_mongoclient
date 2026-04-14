@@ -6,20 +6,25 @@ FROM docker.io/library/python:slim
 # Set the working directory to /app
 WORKDIR /app
 
-# Add the Python files for the application
-COPY *.py .
+# Install uv using the official installer
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
-# Install the required Python modules
-COPY requirements.txt .
-RUN python3 -m pip install --requirement requirements.txt
+# Add the Python files for the application
+COPY pyproject.toml uv.lock README.md *.py ./
+
+# Set uv to use the .cache directory
+ENV UV_CACHE_DIR=/app/.cache/uv
+
+# Install Python dependencies
+RUN uv sync --frozen --no-cache
 
 # Add a user account
 # No need to run as root in the container
 RUN adduser --disabled-password --disabled-login --no-create-home mongoclient
 
-# Run all future commands as mongoclient
+# No need to run as root in the container
 USER mongoclient
 
 # Set the command to run on start up
-ENTRYPOINT ["python3", "/app/cli.py"]
+ENTRYPOINT ["uv", "run",  "/app/cli.py"]
 CMD ["--help"]
