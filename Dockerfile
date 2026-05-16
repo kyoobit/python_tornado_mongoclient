@@ -12,9 +12,6 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 # Add the Python files for the application
 COPY pyproject.toml uv.lock README.md *.py ./
 
-# Set uv to use the .cache directory
-ENV UV_CACHE_DIR=/app/.cache/uv
-
 # Install Python dependencies
 RUN uv sync --frozen --no-cache
 
@@ -25,6 +22,8 @@ RUN adduser --disabled-password --disabled-login --no-create-home mongoclient
 # No need to run as root in the container
 USER mongoclient
 
+ENV PATH="/app/.venv/bin:$PATH"
+
 # Set the command to run on start up
-ENTRYPOINT ["uv", "run",  "/app/cli.py"]
+ENTRYPOINT ["python",  "/app/cli.py"]
 CMD ["--help"]
