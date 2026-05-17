@@ -2,25 +2,27 @@
 # https://www.gnu.org/software/make/manual/make.html
 SHELL := /bin/sh
 
-# Actions that don't require target files
-.PHONY: install install-dev format lint test depcheck secscan all clean help
+# Actions that do not produce an output file
+.PHONY: install update format lint test depcheck secscan all clean help
 
 install: pyproject.toml uv.lock ## Install the application requirements
 	# Set the python version in `.python-version'
 	# Report the `uv' version or install `uv' when missing
-	uv --version || curl -LsSf https://astral.sh/uv/install.sh | sh
-	# Install the Python requirements using `uv' in the virtual environment
-	# Use --frozen for the exact version used in the uv.lock file
-	uv sync --frozen
-
-install-dev: pyproject.toml uv.lock ## Install the application requirements
-	# Set the python version in `.python-version'
-	# Report the `uv' version or install `uv' when missing
+	# https://docs.astral.sh/uv/reference/cli/
 	uv --version || curl -LsSf https://astral.sh/uv/install.sh | sh
 	# Install the Python requirements using `uv' in the virtual environment
 	# Include the development dependencies used for additional CI/CD checks
-	# Upgrade as packages become available (Use --frozen for the exact version)
-	uv sync --all-extras --dev --upgrade
+	# Use --frozen for the exact version used in the uv.lock file
+	# https://docs.astral.sh/uv/reference/cli/#uv-sync
+	uv sync --frozen
+
+update: pyproject.toml uv.lock ## Update the application requirements
+	# Upgrade the Python requirements using `uv' in the virtual environment
+	# https://docs.astral.sh/uv/reference/cli/#uv-sync
+	# --all-extras  Include all optional dependencies
+	# --all-groups  Include dependencies from all dependency groups
+	# --upgrade     Allow package upgrades, ignoring pinned versions
+	uv sync --all-extras --all-groups --upgrade
 
 format: ## (Re)Format the application files
 	# (Re)Format the application files
@@ -38,17 +40,19 @@ test: ## Test the application
 	# Use `coverage html' to generate a HTML coverage report
 
 depcheck: ## Dependency check for known vulnerabilities
-	# Perform a scan of dependencies using uv
+	# Perform a scan of dependencies using uv audit
 	# https://docs.astral.sh/uv/reference/cli/#uv-audit
 	uv audit --verbose --no-cache
+	# Check for issues with dependencies using deptry
+	# https://deptry.com/usage/
+	uv run deptry --config pyproject.toml .
 
 secscan: ## Run a source code security analyzer
-	# Analyze the application files
-	# Ignore B101 Use of assert detected, due to laziness of putting tests in the same file
-	uv run bandit --recursive *.py
-	uv run bandit --recursive tests/*.py
+	# Analyze the application files using bandit
+	# https://bandit.readthedocs.io/en/latest/
+	uv run bandit --configfile pyproject.toml --recursive .
 
-all: install-dev format lint test depcheck secscan ## Run all checks
+all: install format lint test depcheck secscan ## Run ci/cd commands
 
 help: ## Print a list of make options available
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' ${MAKEFILE_LIST} | sort | \
@@ -67,5 +71,5 @@ clean: ## Clean up files used locally when needed
 	rm -rf ./build ./dist ./*.egg-info
 	# Remove the Python virtual environment
 	rm -rf ./.venv
-	# Remove uv cache (optional)
-	# uv cache clean
+	# Remove uv cache
+	uv cache clean
